@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Nam Hải Oracle v3.5 – The Invisible Engine</title>
+    <title>Nam Hải Oracle v3.5.1 – The Invisible Engine</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body { -webkit-user-select: none; user-select: none; font-family:sans-serif; background:#0d0d0d; color:#fff; text-align:center; padding:15px; }
@@ -21,7 +21,7 @@
 <body oncontextmenu="return false;"> 
     <h2 onclick="showLogs()">🔮 Nam Hải Oracle</h2>
     <input id="name" placeholder="Danh tính của bạn..." style="width: 90%; max-width: 500px;"><br>
-    <textarea id="question" maxlength="3000" placeholder="Hãy trút hết nỗi lòng vào đây..."></textarea><br>
+    <textarea id="question" maxlength="3000" placeholder="Hãy trút hết nỗi lòng vào đây... Tiên sinh đang lắng nghe sự thật từ bạn."></textarea><br>
 
     <div style="margin: 10px 0;">
         <input id="day" type="number" placeholder="Ngày" style="width: 60px;">
@@ -55,7 +55,7 @@
     </audio>
 
 <script>
-    /* BẢO MẬT ADMIN - CHỐNG F12 */
+    /* CHỐNG F12 VÀ COPY */
     document.onkeydown = function(e) { if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74 || e.keyCode == 67)) || (e.ctrlKey && e.keyCode == 85)) return false; };
 
     const cards = [
@@ -67,7 +67,7 @@
         {n:"Giáo Hoàng",m:"bám víu vào giáo điều cũ kỹ vì sợ hãi thay đổi, điều này đang bóp nghẹt sự sáng tạo của bạn",r:"những lời khuyên bạn tin tưởng bấy lâu thực chất chỉ là rào cản ngăn bạn tìm thấy sự thật"},
         {n:"Người Tình",m:"trái tim chia làm đôi, sự tham lam muốn có tất cả khiến bạn chẳng có được gì trọn vẹn",r:"một sự đổ vỡ ngầm đang diễn ra, mâu thuẫn nội tâm đang khiến bạn mất ngủ và kiệt sức"},
         {n:"Cỗ Xe",m:"lao đi như con thiêu thân, tốc độ không bù đắp được cho việc thiếu phương hướng",r:"sự mất kiểm soát về cảm xúc biến bạn thành kẻ hung hăng trong mắt những người xung quanh"},
-        {n:"Sức Mạnh",m:"nén nhịn quá lâu để giữ hòa khí giả tạo khiến con thú bên trong bạn sắp bùng phát",r:"bạn đang để sự sợ hãi và những bản năng thấp kém dẫnắt hành động của mình"},
+        {n:"Sức Mạnh",m:"nén nhịn quá lâu để giữ hòa khí giả tạo khiến con thú bên trong bạn sắp bùng phát",r:"bạn đang để sự sợ hãi và những bản năng thấp kém dẫn dắt hành động của mình"},
         {n:"Ẩn Sĩ",m:"lẩn trốn thế gian để gặm nhấm nỗi cô đơn, sự chiêm nghiệm đang biến thành sự tự cô lập độc hại",r:"cố tỏ ra thấu hiểu sự đời chỉ là cách bạn che đậy nỗi sợ bị người khác nhìn thấu sự trống rỗng"},
         {n:"Bánh Xe",m:"vận may đang xoay chuyển, nhưng nếu không có thực lực, sự may mắn này chỉ là tai họa trá hình",r:"những trắc trở liên tục ập đến là cái giá phải trả cho những quyết định sai lầm trong quá khứ"},
         {n:"Công Lý",m:"quá rạch ròi đến mức tàn nhẫn, sự công bằng bạn đòi hỏi thực chất chỉ là sự ích kỷ",r:"bạn thấy mình là nạn nhân của sự bất công, nhưng hãy nhìn lại những gì chính bạn đã gieo"},
@@ -76,7 +76,7 @@
         {n:"Tiết Độ",m:"gượng ép để giữ vẻ ngoài điềm tĩnh khiến nội tâm bạn bị xé nát",r:"lối sống thiếu điều độ và mất cân bằng cảm xúc đang đẩy bạn đến bờ vực suy sụp"},
         {n:"Ác Quỷ",m:"làm nô lệ cho ham muốn và thói hư tật xấu của chính mình mà vẫn tự lừa dối rằng mình tự do",r:"bắt đầu nhận ra những sợi xích đang siết chặt, nhưng sự hèn nhát khiến bạn không dám bẻ gãy chúng"},
         {n:"Tòa Tháp",m:"nền tảng dày công xây dựng đang sụp đổ, hệ quả tất yếu của việc xây nhà trên cát",r:"trì hoãn một cú sốc không thể tránh khỏi, sự trốn tránh này chỉ làm hậu quả nặng nề hơn"},
-        {n:"Ngôi Sao",m:"hy vọng viển vông che mờ thực tại khốc liệt mà bạn cần phải đối mặt ngay bây giờ",r:"sự trống rỗng và mất sạch niềm tin khiến bạn trở thành một cái bóng vật vờ không tương lai"},
+        {n:"Ngôi Sao",m:"hy vọng viển vông che mờ thực tại khốt liệt mà bạn cần phải đối mặt ngay bây giờ",r:"sự trống rỗng và mất sạch niềm tin khiến bạn trở thành một cái bóng vật vờ không tương lai"},
         {n:"Mặt Trăng",m:"lạc bước trong mê cung của những kịch bản xấu xa nhất do chính mình vẽ ra",r:"những sự thật trần trụi và xấu xí sắp lộ diện, bạn không còn chỗ nào để lẩn trốn nữa"},
         {n:"Mặt Trời",m:"tự tin thái quá biến thành kiêu ngạo, bạn đang ngủ quên trên một chiến thắng không có thật",r:"thành công ngắn hạn làm mờ mắt bạn, khiến bạn không thấy vực thẳm đang đợi phía trước"},
         {n:"Phán Xét",m:"tiếng chuông thức tỉnh vang lên, sai lầm cũ quay lại để đòi một cái giá xứng đáng",r:"trốn tránh trách nhiệm và không dám nhìn thẳng vào sự thật khiến bạn bị kẹt lại quá khứ"},
@@ -98,18 +98,16 @@
         let results = [];
         const reflections = [
             "Bạn nói mình ổn, nhưng Tiên sinh thấy thực ra bạn đang gồng mình chịu đựng đến mức kiệt cùng.",
-            "Đằng sau những lời kể này, Tiên sinh cảm nhận được một khao khát thấu hiểu mà bạn chưa dám thừa nhận.",
-            "Sự thật là bạn đang tự xây một chiếc lồng cho chính mình và hy vọng tìm thấy chìa khóa ở người khác."
+            "Đằng sau những lời kể này, Tiên sinh cảm nhận một khao khát thấu hiểu mà bạn chưa dám thừa nhận.",
+            "Sự thật là bạn đang tự xây một chiếc lồng cho chính mình và hy vọng tìm thấy chìa khóa từ người khác."
         ];
         const map = [
-            { keys: ["chia tay", "người cũ", "ly hôn", "người yêu", "crush", "bỏ", "quay lại"], msgs: ["Một mối quan hệ chưa thực sự khép lại hoàn toàn đang âm thầm chi phối tần số năng lượng của bạn."] },
-            { keys: ["nợ", "tiền", "ngân hàng", "đất", "tài chính", "lỗ", "vay", "trắng tay"], msgs: ["Áp lực từ những con số chưa được giải quyết và gánh nặng vật chất đang khiến tâm trí bạn không thể an yên."] },
+            { keys: ["chia tay", "người cũ", "ly hôn", "người yêu", "crush", "bỏ", "quay lại"], msgs: ["Một mối quan hệ chưa thực sự khép lại hoàn toàn đang âm thầm chi phối năng lượng của bạn."] },
+            { keys: ["nợ", "tiền", "ngân hàng", "đất", "tài chính", "lỗ", "vay", "trắng tay"], msgs: ["Áp lực từ những con số chưa giải quyết và gánh nặng vật chất khiến tâm trí bạn không thể an yên."] },
             { keys: ["sếp", "công ty", "nghỉ việc", "đồng nghiệp", "áp lực", "công việc"], msgs: ["Môi trường xung quanh đang khiến bạn bị bóp nghẹt, khiến tài năng thực sự không thể phát tiết."] }
         ];
         for (let item of map) { if (item.keys.some(k => q.includes(k))) results.push(item.msgs[0]); }
-        
         let finalRef = reflections[Math.floor(Math.random() * reflections.length)];
-        // COMBO FIX THEO ANH LONG: Reflection + Keyword
         return results.length ? (finalRef + " " + results.join(" ")) : finalRef;
     }
 
@@ -122,20 +120,14 @@
         } else return shuffle(pool).slice(0, 5);
     }
 
-    function lifeNumber(d,m,y){
-        if(!d || !m || !y) return null;
-        let s=(parseInt(d)+""+parseInt(m)+""+parseInt(y)).split("").reduce((a,b)=>a+parseInt(b),0);
-        while(s>9){s=s.toString().split("").reduce((x,y)=>x+parseInt(y),0)}
-        return s;
-    }
-
     function startDraw(){
         if(localStorage.getItem("namhai_limit") === "1"){ alert("Tiên sinh đã phán rồi. Hãy quay lại vào mai!"); return; }
         
-        // KIỂM TRA TUỔI CHẶT CHẼ THEO ANH LONG
-        let birthYear = parseInt(document.getElementById("year").value);
-        let currentYear = new Date().getFullYear();
-        if(!birthYear || birthYear < 1900 || birthYear > currentYear || (currentYear - birthYear) < 18) {
+        // CHẶN 18+ BỌC THÉP
+        const yearVal = document.getElementById("year").value;
+        const birthYear = parseInt(yearVal);
+        const currentYear = new Date().getFullYear();
+        if(!yearVal || isNaN(birthYear) || birthYear < 1900 || birthYear > currentYear || (currentYear - birthYear) < 18) {
             alert("Tiên sinh chỉ tiếp người từ 18 tuổi trở lên. Hãy quay lại khi bạn đã đủ trải nghiệm đời.");
             return;
         }
@@ -172,13 +164,16 @@
         const q=document.getElementById("question").value;
         const topic=document.getElementById("topic").value;
         const state=document.getElementById("state").value;
-        const num=lifeNumber(document.getElementById("day").value, document.getElementById("month").value, document.getElementById("year").value);
+        let sY = parseInt(document.getElementById("year").value);
+        let sM = parseInt(document.getElementById("month").value);
+        let sD = parseInt(document.getElementById("day").value);
+        const num = (sD && sM && sY) ? ((sD+""+sM+""+sY).split("").reduce((a,b)=>a+parseInt(b),0)) % 9 || 9 : null;
         const mgs = picked.map(p => p.rev ? cards[p.id].r : cards[p.id].m);
 
         let aiTruth = analyzeTruth(q);
         let contextMsg = (topic === "love") ? (state === "hesitate" ? "Dòng năng lượng hỗn loạn cho thấy bạn đang níu kéo một bóng ma quá khứ." : "Tâm trí mâu thuẫn, bạn tìm sự bao biện cho sự ích kỷ.") : (topic === "money") ? "Trong cõi vật chất, tham vọng che mờ thiên nhãn, rủi ro cận kề." : "Nội tâm sóng gió bởi những bóng đen chưa hóa giải.";
         
-        // --- RANDOM TEMPLATE THEO ANH LONG (GIẤU VẾT) ---
+        // RANDOM TEMPLATE GIẤU VẾT
         const rootTemplates = [
             `📍 **Dòng chảy định mệnh:**\n- Gốc rễ của vấn đề là: ${mgs[0]}.\n- Hiện trạng thực tế: ${mgs[1]}.\n\n`,
             `📍 **Huyền cơ khai mở:**\n- Nguồn cơn sâu xa bắt đầu từ: ${mgs[0]}.\n- Những gì đang diễn ra: ${mgs[1]}.\n\n`,
@@ -190,11 +185,11 @@
         s += `🧠 **Tiên sinh nhìn ra:** ${aiTruth}\n\n`;
         s += `⚠️ **Huyền cơ:** ${contextMsg}\n\n`;
         s += selectedRoot;
-        s += `📍 **Nút thắt sinh tử:** ${mgs[2]}. Đây chính là xiềng xích đang xích chân bạn lại.\n\n`;
+        s += `📍 **Nút thắt sinh tử:** ${mgs[2]}. Đây chính là xiềng xích đang ngăn trở bạn.\n\n`;
         s += `💡 **Cảnh báo:** Nếu bạn vẫn tiếp tục ${mgs[3]}, thì kết cục tất yếu sẽ là ${mgs[4]}.\n\n`;
         
         if(num) {
-            let numMsg = num==7?"Trực giác mạnh nhưng sự đa nghi thái quá đang biến bạn thành kẻ cô độc.":num==8?"Tham vọng vật chất là động lực nhưng cũng là liều thuốc độc.":"Cảm xúc thất thường là rào cản lớn nhất của bạn.";
+            let numMsg = num==7?"Trực giác mạnh nhưng sự đa nghi đang biến bạn thành kẻ cô độc.":num==8?"Tham vọng vật chất lớn là động lực nhưng cũng là thuốc độc.":"Cảm xúc thất thường là rào cản lớn nhất của bạn.";
             s += `✨ **Bảo tự số ${num}:** ${numMsg}\n\n`;
         }
         s += `👉 **SỰ THẬT CUỐI CÙNG:** Đằng sau tất cả, có một điểm đen mà bạn không bao giờ muốn nhắc tới, đó chính là...`;
@@ -207,7 +202,7 @@
             if(i>=s.length*0.72) { 
                 clearInterval(timer);
                 document.getElementById("paywall").classList.remove("hidden");
-                document.getElementById("paywall").innerHTML=`<div class="result-card lock"><p>🔒 Tiên sinh đã thấy 'điểm mù' trong lời kể của bạn. Nhập mã NAMHAI để khai mở nốt 30% sự thật.</p><input id="code" style="width:120px" placeholder="Mã..."><button onclick="unlock('${encodeURIComponent(s)}')">Mở khóa</button></div>`;
+                document.getElementById("paywall").innerHTML=`<div class="result-card lock"><p>🔒 Tiên sinh đã thấy 'điểm mù'. Nhập mã NAMHAI để khai mở nốt 30% sự thật.</p><input id="code" style="width:120px" placeholder="Mã..."><button onclick="unlock('${encodeURIComponent(s)}')">Mở khóa</button></div>`;
             }
         },35);
         localStorage.setItem("namhai_limit", "1");
@@ -220,14 +215,12 @@
             document.getElementById("paywall").classList.add("hidden");
             document.getElementById("copyBtn").classList.remove("hidden");
             localStorage.removeItem("namhai_limit"); 
-        } else alert("Sai mã. Thiên cơ không dành cho người thiếu thành tâm!");
+        } else alert("Sai mã!");
     }
 
     function toggleMusic(){ let m=document.getElementById("bgm"); m.paused?m.play():m.pause(); }
-    function copyText(){ navigator.clipboard.writeText(document.getElementById("final").innerText); alert("Đã sao chép lời phán!"); }
+    function copyText(){ navigator.clipboard.writeText(document.getElementById("final").innerText); alert("Đã sao chép!"); }
     function resetApp(){ localStorage.clear(); location.reload(); }
 </script>
 </body>
 </html>
-
-        
