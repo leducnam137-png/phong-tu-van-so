@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Nam Hải Oracle v3.3 – The Alchemist</title>
+    <title>Nam Hải Oracle v3.5 – The Invisible Engine</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body { -webkit-user-select: none; user-select: none; font-family:sans-serif; background:#0d0d0d; color:#fff; text-align:center; padding:15px; }
@@ -21,8 +21,7 @@
 <body oncontextmenu="return false;"> 
     <h2 onclick="showLogs()">🔮 Nam Hải Oracle</h2>
     <input id="name" placeholder="Danh tính của bạn..." style="width: 90%; max-width: 500px;"><br>
-    
-    <textarea id="question" maxlength="3000" placeholder="Hãy trút hết nỗi lòng vào đây... Tiên sinh đang lắng nghe sự thật từ bạn."></textarea><br>
+    <textarea id="question" maxlength="3000" placeholder="Hãy trút hết nỗi lòng vào đây..."></textarea><br>
 
     <div style="margin: 10px 0;">
         <input id="day" type="number" placeholder="Ngày" style="width: 60px;">
@@ -44,7 +43,7 @@
 
     <button onclick="startDraw()">Trải bài 🎵</button>
     <button onclick="toggleMusic()">🔊/🔇</button>
-    <button onclick="resetApp()" style="background:#333; color:#777; width: 90%; font-size: 12px; margin-top: 10px;">Làm mới hệ thống</button>
+    <button onclick="resetApp()" style="background:#333; color:#777; width: 90%; font-size: 11px; margin-top: 10px;">Làm mới hệ thống</button>
 
     <div id="results"></div>
     <div id="final"></div>
@@ -56,7 +55,7 @@
     </audio>
 
 <script>
-    /* BẢO MẬT ADMIN */
+    /* BẢO MẬT ADMIN - CHỐNG F12 */
     document.onkeydown = function(e) { if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74 || e.keyCode == 67)) || (e.ctrlKey && e.keyCode == 85)) return false; };
 
     const cards = [
@@ -68,7 +67,7 @@
         {n:"Giáo Hoàng",m:"bám víu vào giáo điều cũ kỹ vì sợ hãi thay đổi, điều này đang bóp nghẹt sự sáng tạo của bạn",r:"những lời khuyên bạn tin tưởng bấy lâu thực chất chỉ là rào cản ngăn bạn tìm thấy sự thật"},
         {n:"Người Tình",m:"trái tim chia làm đôi, sự tham lam muốn có tất cả khiến bạn chẳng có được gì trọn vẹn",r:"một sự đổ vỡ ngầm đang diễn ra, mâu thuẫn nội tâm đang khiến bạn mất ngủ và kiệt sức"},
         {n:"Cỗ Xe",m:"lao đi như con thiêu thân, tốc độ không bù đắp được cho việc thiếu phương hướng",r:"sự mất kiểm soát về cảm xúc biến bạn thành kẻ hung hăng trong mắt những người xung quanh"},
-        {n:"Sức Mạnh",m:"nén nhịn quá lâu để giữ hòa khí giả tạo khiến con thú bên trong bạn sắp bùng phát",r:"bạn đang để sự sợ hãi và những bản năng thấp kém dẫn dắt hành động của mình"},
+        {n:"Sức Mạnh",m:"nén nhịn quá lâu để giữ hòa khí giả tạo khiến con thú bên trong bạn sắp bùng phát",r:"bạn đang để sự sợ hãi và những bản năng thấp kém dẫnắt hành động của mình"},
         {n:"Ẩn Sĩ",m:"lẩn trốn thế gian để gặm nhấm nỗi cô đơn, sự chiêm nghiệm đang biến thành sự tự cô lập độc hại",r:"cố tỏ ra thấu hiểu sự đời chỉ là cách bạn che đậy nỗi sợ bị người khác nhìn thấu sự trống rỗng"},
         {n:"Bánh Xe",m:"vận may đang xoay chuyển, nhưng nếu không có thực lực, sự may mắn này chỉ là tai họa trá hình",r:"những trắc trở liên tục ập đến là cái giá phải trả cho những quyết định sai lầm trong quá khứ"},
         {n:"Công Lý",m:"quá rạch ròi đến mức tàn nhẫn, sự công bằng bạn đòi hỏi thực chất chỉ là sự ích kỷ",r:"bạn thấy mình là nạn nhân của sự bất công, nhưng hãy nhìn lại những gì chính bạn đã gieo"},
@@ -85,29 +84,21 @@
     ];
 
     let picked=[], step=0;
-
     function shuffle(a){for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a;}
-    
-    // TRACKING HÀNH VI
     function trackEvent(eventName, data = {}) {
         let logs = JSON.parse(localStorage.getItem("namhai_logs") || "[]");
         logs.push({ event: eventName, time: new Date().toLocaleString(), ...data });
         if(logs.length > 50) logs.shift();
         localStorage.setItem("namhai_logs", JSON.stringify(logs));
     }
+    function showLogs() { console.table(JSON.parse(localStorage.getItem("namhai_logs") || "[]")); }
 
-    function showLogs() {
-        console.table(JSON.parse(localStorage.getItem("namhai_logs") || "[]"));
-        alert("Lịch sử hành vi đã hiển thị trong Console (F12).");
-    }
-
-    // FAKE AI LEVEL 2: MULTI-HIT & REFLECTION
     function analyzeTruth(q) {
         q = q.toLowerCase();
         let results = [];
         const reflections = [
-            "Bạn nói mình ổn, nhưng Tiên sinh thấy thực ra bạn đang cố gồng mình chịu đựng đến mức kiệt cùng.",
-            "Đằng sau những lời kể này, Tiên sinh cảm nhận được một khao khát được thấu hiểu mà bạn chưa dám thừa nhận.",
+            "Bạn nói mình ổn, nhưng Tiên sinh thấy thực ra bạn đang gồng mình chịu đựng đến mức kiệt cùng.",
+            "Đằng sau những lời kể này, Tiên sinh cảm nhận được một khao khát thấu hiểu mà bạn chưa dám thừa nhận.",
             "Sự thật là bạn đang tự xây một chiếc lồng cho chính mình và hy vọng tìm thấy chìa khóa ở người khác."
         ];
         const map = [
@@ -115,30 +106,20 @@
             { keys: ["nợ", "tiền", "ngân hàng", "đất", "tài chính", "lỗ", "vay", "trắng tay"], msgs: ["Áp lực từ những con số chưa được giải quyết và gánh nặng vật chất đang khiến tâm trí bạn không thể an yên."] },
             { keys: ["sếp", "công ty", "nghỉ việc", "đồng nghiệp", "áp lực", "công việc"], msgs: ["Môi trường xung quanh đang khiến bạn bị bóp nghẹt, khiến tài năng thực sự không thể phát tiết."] }
         ];
-
-        for (let item of map) {
-            if (item.keys.some(k => q.includes(k))) results.push(item.msgs[0]);
-        }
-        if (results.length > 0) results.unshift(reflections[Math.floor(Math.random() * reflections.length)]);
-        return results.length ? results.join(" ") : "Tiên sinh thấy tâm tư bạn đang rối bời bởi những luồng suy nghĩ chồng chéo chưa tìm được lối ra.";
+        for (let item of map) { if (item.keys.some(k => q.includes(k))) results.push(item.msgs[0]); }
+        
+        let finalRef = reflections[Math.floor(Math.random() * reflections.length)];
+        // COMBO FIX THEO ANH LONG: Reflection + Keyword
+        return results.length ? (finalRef + " " + results.join(" ")) : finalRef;
     }
 
-    // MASTER WEIGHTED CARDS 70/30
     function getMasterCards(topic) {
         let pool = [...Array(22).keys()];
-        let forced = null;
-        if (Math.random() < 0.7) {
-            if (topic === "money") forced = 15; // Ác Quỷ
-            else if (topic === "love") forced = 6; // Người Tình
-            else if (topic === "work") forced = 4; // Hoàng Đế
-            else forced = 18; // Mặt Trăng
-        }
+        let forced = (Math.random() < 0.7) ? (topic === "money" ? 15 : topic === "love" ? 6 : topic === "work" ? 4 : 18) : null;
         if (forced !== null) {
             let rest = shuffle(pool.filter(i => i !== forced)).slice(0, 4);
             return [rest[0], rest[1], forced, rest[2], rest[3]];
-        } else {
-            return shuffle(pool).slice(0, 5);
-        }
+        } else return shuffle(pool).slice(0, 5);
     }
 
     function lifeNumber(d,m,y){
@@ -149,20 +130,25 @@
     }
 
     function startDraw(){
-        if(localStorage.getItem("namhai_limit") === "1"){
-            alert("Tiên sinh đã phán cho bạn rồi. Hãy quay lại vào ngày mai!");
+        if(localStorage.getItem("namhai_limit") === "1"){ alert("Tiên sinh đã phán rồi. Hãy quay lại vào mai!"); return; }
+        
+        // KIỂM TRA TUỔI CHẶT CHẼ THEO ANH LONG
+        let birthYear = parseInt(document.getElementById("year").value);
+        let currentYear = new Date().getFullYear();
+        if(!birthYear || birthYear < 1900 || birthYear > currentYear || (currentYear - birthYear) < 18) {
+            alert("Tiên sinh chỉ tiếp người từ 18 tuổi trở lên. Hãy quay lại khi bạn đã đủ trải nghiệm đời.");
             return;
         }
+
         const n=document.getElementById("name").value.trim();
         const q=document.getElementById("question").value.trim();
         const t=document.getElementById("topic").value;
-        if(!n || q.length < 15){ alert("Hãy thành tâm giãi bày để Tiên sinh thấu thị chân tướng!"); return; }
-
+        if(!n || q.length < 15){ alert("Hãy thành tâm giãi bày (ít nhất 15 ký tự)!"); return; }
+        
         trackEvent("start_draw", { name: n, topic: t });
         step=0;
         let smartIds = getMasterCards(t);
         picked = smartIds.map(i => ({id: i, rev: Math.random() < 0.5}));
-        
         document.getElementById("results").innerHTML="";
         document.getElementById("final").innerHTML="";
         document.getElementById("paywall").classList.add("hidden");
@@ -172,6 +158,7 @@
 
     function showNext(){
         if(step<5){
+            trackEvent("view_card", { step: step + 1 });
             let r=["Gốc rễ","Hiện tại","Nút thắt","Hành động","Kết quả"];
             let p=picked[step];
             let url=`https://www.sacred-texts.com/tarot/pkt/img/ar${p.id<10?'0'+p.id:p.id}.jpg`;
@@ -188,23 +175,23 @@
         const num=lifeNumber(document.getElementById("day").value, document.getElementById("month").value, document.getElementById("year").value);
         const mgs = picked.map(p => p.rev ? cards[p.id].r : cards[p.id].m);
 
-        trackEvent("finish_72_view", { name: name });
-
         let aiTruth = analyzeTruth(q);
-        let contextMsg = "";
-        if(topic === "love") contextMsg = state === "hesitate" ? "Dòng năng lượng hỗn loạn cho thấy bạn đang níu kéo một bóng ma quá khứ." : "Tâm trí đang mâu thuẫn, bạn tìm sự bao biện cho sự ích kỷ.";
-        else if(topic === "money") contextMsg = "Trong cõi vật chất, tham vọng đang che mờ thiên nhãn, rủi ro đã cận kề.";
-        else contextMsg = "Nội tâm bạn như mặt hồ đầy sóng gió bởi những bóng đen chưa được hóa giải.";
+        let contextMsg = (topic === "love") ? (state === "hesitate" ? "Dòng năng lượng hỗn loạn cho thấy bạn đang níu kéo một bóng ma quá khứ." : "Tâm trí mâu thuẫn, bạn tìm sự bao biện cho sự ích kỷ.") : (topic === "money") ? "Trong cõi vật chất, tham vọng che mờ thiên nhãn, rủi ro cận kề." : "Nội tâm sóng gió bởi những bóng đen chưa hóa giải.";
+        
+        // --- RANDOM TEMPLATE THEO ANH LONG (GIẤU VẾT) ---
+        const rootTemplates = [
+            `📍 **Dòng chảy định mệnh:**\n- Gốc rễ của vấn đề là: ${mgs[0]}.\n- Hiện trạng thực tế: ${mgs[1]}.\n\n`,
+            `📍 **Huyền cơ khai mở:**\n- Nguồn cơn sâu xa bắt đầu từ: ${mgs[0]}.\n- Những gì đang diễn ra: ${mgs[1]}.\n\n`,
+            `📍 **Vòng xoáy nghiệp quả:**\n- Mọi chuyện khởi phát do: ${mgs[0]}.\n- Trạng thái hiện tại: ${mgs[1]}.\n\n`
+        ];
+        let selectedRoot = rootTemplates[Math.floor(Math.random() * rootTemplates.length)];
 
-        // BUILD STRING FIX NGỮ PHÁP MƯỢT MÀ
         let s = `👉 ${name}, Tiên sinh đã thấu thị chân tướng sự việc qua lời kể của bạn:\n\n`;
         s += `🧠 **Tiên sinh nhìn ra:** ${aiTruth}\n\n`;
         s += `⚠️ **Huyền cơ:** ${contextMsg}\n\n`;
-        s += `📍 **Dòng chảy định mệnh:**\n`;
-        s += `- Gốc rễ nằm ở chỗ bạn ${mgs[0]}.\n`;
-        s += `- Hiện tại, bạn đang rơi vào trạng thái ${mgs[1]}.\n\n`;
-        s += `📍 **Nút thắt sinh tử:** Chính việc bạn ${mgs[2]} là thứ đang xích chân bạn lại.\n\n`;
-        s += `💡 **Cảnh báo:** Nếu bạn tiếp tục đi theo hướng ${mgs[3]}, kết cục sẽ là ${mgs[4]}.\n\n`;
+        s += selectedRoot;
+        s += `📍 **Nút thắt sinh tử:** ${mgs[2]}. Đây chính là xiềng xích đang xích chân bạn lại.\n\n`;
+        s += `💡 **Cảnh báo:** Nếu bạn vẫn tiếp tục ${mgs[3]}, thì kết cục tất yếu sẽ là ${mgs[4]}.\n\n`;
         
         if(num) {
             let numMsg = num==7?"Trực giác mạnh nhưng sự đa nghi thái quá đang biến bạn thành kẻ cô độc.":num==8?"Tham vọng vật chất là động lực nhưng cũng là liều thuốc độc.":"Cảm xúc thất thường là rào cản lớn nhất của bạn.";
@@ -213,6 +200,8 @@
         s += `👉 **SỰ THẬT CUỐI CÙNG:** Đằng sau tất cả, có một điểm đen mà bạn không bao giờ muốn nhắc tới, đó chính là...`;
 
         let i=0; let el=document.getElementById("final"); el.innerHTML="";
+        trackEvent("hit_paywall", { name: name });
+
         let timer=setInterval(()=>{
             el.innerHTML += (s[i]==="\n"?"<br>":s[i]); i++;
             if(i>=s.length*0.72) { 
@@ -226,12 +215,12 @@
 
     function unlock(fullText){
         if(document.getElementById("code").value.toUpperCase()==="NAMHAI"){
-            trackEvent("successful_unlock");
+            trackEvent("unlock_success");
             document.getElementById("final").innerHTML = decodeURIComponent(fullText).replace(/\n/g,"<br>");
             document.getElementById("paywall").classList.add("hidden");
             document.getElementById("copyBtn").classList.remove("hidden");
             localStorage.removeItem("namhai_limit"); 
-        } else { alert("Sai mã. Thiên cơ không dành cho người thiếu thành tâm."); }
+        } else alert("Sai mã. Thiên cơ không dành cho người thiếu thành tâm!");
     }
 
     function toggleMusic(){ let m=document.getElementById("bgm"); m.paused?m.play():m.pause(); }
@@ -240,3 +229,5 @@
 </script>
 </body>
 </html>
+
+        
