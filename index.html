@@ -2,29 +2,29 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Nam Hải Oracle v2 – Trí Tuệ Đa Tầng</title>
+    <title>Nam Hải Oracle v3.3 – The Alchemist</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body { -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; font-family:sans-serif; background:#0d0d0d; color:#fff; text-align:center; padding:15px; }
+        body { -webkit-user-select: none; user-select: none; font-family:sans-serif; background:#0d0d0d; color:#fff; text-align:center; padding:15px; }
         input, select, button, textarea { padding:10px; margin:5px; border-radius:6px; border:none; font-size:16px; background: #222; color: #fff; }
-        textarea { width: 90%; max-width: 500px; height: 150px; border: 1px solid #444; -webkit-user-select: auto; user-select: auto; line-height: 1.5; }
+        textarea { width: 90%; max-width: 500px; height: 120px; border: 1px solid #444; -webkit-user-select: auto; user-select: auto; line-height: 1.6; }
         button { background:#ffcc00; color:#000; font-weight:bold; cursor:pointer; width: 45%; max-width: 240px; }
         .result-card { margin:10px; padding:12px; border:1px solid #444; border-radius:12px; background: #1a1a1a; }
-        .card-img { width:90px; transition:0.3s; min-height: 140px; background: #222; border-radius: 4px; display: inline-block; }
+        .card-img { width:90px; min-height: 140px; background: #222; border-radius: 4px; display: inline-block; transition: 0.3s; }
         .rev { transform:rotate(180deg); }
         .hidden { display:none; }
-        .lock { border:2px solid #ffcc00; background: #111; padding: 20px; }
+        .lock { border:2px solid #ffcc00; background: #111; padding: 20px; margin-top: 20px; }
         #final { white-space:pre-wrap; margin-top:20px; text-align:left; line-height:1.8; font-size:17px; max-width:500px; margin:auto; color: #f0f0f0; }
-        h2 { color: #ffcc00; text-shadow: 0 0 10px rgba(255,204,0,0.5); }
+        h2 { color: #ffcc00; text-shadow: 0 0 8px rgba(255,204,0,0.4); cursor: pointer; }
     </style>
 </head>
 <body oncontextmenu="return false;"> 
-    <h2>🔮 Nam Hải Oracle</h2>
-    <input id="name" placeholder="Họ và tên" style="width: 90%; max-width: 500px;"><br>
+    <h2 onclick="showLogs()">🔮 Nam Hải Oracle</h2>
+    <input id="name" placeholder="Danh tính của bạn..." style="width: 90%; max-width: 500px;"><br>
     
-    <textarea id="question" maxlength="3000" placeholder="Kể chi tiết câu chuyện của bạn (tối đa 3000 chữ). Càng thật lòng, Tiên sinh phán càng 'đau'..."></textarea><br>
+    <textarea id="question" maxlength="3000" placeholder="Hãy trút hết nỗi lòng vào đây... Tiên sinh đang lắng nghe sự thật từ bạn."></textarea><br>
 
-    <div style="margin-bottom: 10px;">
+    <div style="margin: 10px 0;">
         <input id="day" type="number" placeholder="Ngày" style="width: 60px;">
         <input id="month" type="number" placeholder="Tháng" style="width: 60px;">
         <input id="year" type="number" placeholder="Năm sinh" style="width: 80px;">
@@ -37,18 +37,18 @@
         <option value="mind">Nội tâm</option>
     </select>
     <select id="state" style="width: 45%;">
-        <option value="pre">Sắp quyết định</option>
         <option value="hesitate">Đang do dự</option>
+        <option value="pre">Sắp quyết định</option>
         <option value="after">Đã quyết định</option>
     </select><br>
 
-    <button onclick="startDraw()">Bắt đầu trải bài 🎵</button>
+    <button onclick="startDraw()">Trải bài 🎵</button>
     <button onclick="toggleMusic()">🔊/🔇</button>
-    <button onclick="resetApp()" style="background: #444; color: #ccc; width: 92%; max-width: 500px;">🔄 Làm mới quẻ</button>
+    <button onclick="resetApp()" style="background:#333; color:#777; width: 90%; font-size: 12px; margin-top: 10px;">Làm mới hệ thống</button>
 
     <div id="results"></div>
     <div id="final"></div>
-    <button id="copyBtn" class="hidden" style="width: 90%; max-width: 500px;" onclick="copyText()">📋 Sao chép lời phán</button>
+    <button id="copyBtn" class="hidden" style="width: 90%;" onclick="copyText()">📋 Lưu lại lời phán</button>
     <div id="paywall" class="hidden"></div>
     
     <audio id="bgm" loop preload="auto">
@@ -56,117 +56,187 @@
     </audio>
 
 <script>
-    /* LỚP GIÁP BẢO MẬT */
-    document.onkeydown = function(e) {
-        if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74 || e.keyCode == 67)) || (e.ctrlKey && e.keyCode == 85)) return false;
-    };
+    /* BẢO MẬT ADMIN */
+    document.onkeydown = function(e) { if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74 || e.keyCode == 67)) || (e.ctrlKey && e.keyCode == 85)) return false; };
 
     const cards = [
-        {n:"Kẻ Khờ",m:"muốn thử cái mới nhưng chưa có kế hoạch",r:"đang đi sai hướng nhưng cố chấp không quay đầu"},
-        {n:"Pháp Sư",m:"tỏ ra mình vẫn kiểm soát tốt mọi thứ",r:"đang bị người khác dắt mũi hoặc thao túng"},
-        {n:"Nữ Tư Tế",m:"linh tính thấy bất thường nhưng chưa dám tin",r:"đang cố lờ đi dấu hiệu bản thân thấy rõ"},
-        {n:"Hoàng Hậu",m:"mải mê hưởng thụ mà quên mục tiêu",r:"để sự phụ thuộc lấn át lý trí"},
-        {n:"Hoàng Đế",m:"gồng mình giữ cái tôi",r:"đuối sức vì gánh vác quá nhiều"},
-        {n:"Giáo Hoàng",m:"đi theo lối mòn cũ",r:"làm việc ngược giá trị bản thân"},
-        {n:"Người Tình",m:"lòng không yên, đứng núi này trông núi nọ",r:"mâu thuẫn nội tâm gây mất ngủ"},
-        {n:"Cỗ Xe",m:"nôn nóng kết quả",r:"mất phương hướng dễ nổi nóng"},
-        {n:"Sức Mạnh",m:"ngậm đắng nuốt cay giữ hòa khí",r:"cảm xúc bộc phát làm hỏng việc"},
-        {n:"Ẩn Sĩ",m:"nghĩ nhiều nhưng không nói",r:"tự làm khổ mình trong cô độc"},
-        {n:"Bánh Xe",m:"thay đổi nhanh không kịp thích nghi",r:"trắc trở liên tục"},
-        {n:"Công Lý",m:"tính toán quá khô khan",r:"thấy mình chịu thiệt vô lý"},
-        {n:"Treo Ngược",m:"kẹt trong bế tắc",r:"hy sinh cho thứ không xứng"},
-        {n:"Cái Chết",m:"từ bỏ cái cũ",r:"níu kéo thứ đã hết"},
-        {n:"Tiết Độ",m:"gượng ép giữ thăng bằng",r:"đánh mất điềm tĩnh"},
-        {n:"Ác Quỷ",m:"bị ham muốn làm mờ lý trí",r:"muốn thoát khỏi ràng buộc"},
-        {n:"Tòa Tháp",m:"nền tảng lung lay",r:"trì hoãn cú sốc phải đối mặt"},
-        {n:"Ng ngôi Sao",m:"chờ phép màu hơn hành động",r:"mất sạch niềm tin"},
-        {n:"Mặt Trăng",m:"lo sợ kịch bản tự vẽ ra",r:"sự thật sắp lộ diện"},
-        {n:"Mặt Trời",m:"quá tự tin dẫn đến chủ quan",r:"ngủ quên trên chiến thắng"},
-        {n:"Phán Xét",m:"đối mặt hậu quả việc cũ",r:"trốn tránh sai lầm"},
-        {n:"Thế Giới",m:"đạt giới hạn muốn dừng lại",r:"dở dang không trọn vẹn"}
+        {n:"Kẻ Khờ",m:"muốn dấn thân vào hành trình mới với đôi mắt nhắm nghiền, sự ngây thơ này có thể là liều thuốc độc",r:"đang đi sai hướng trầm trọng nhưng cái tôi quá lớn khiến bạn không cho phép mình quay đầu"},
+        {n:"Pháp Sư",m:"cố gắng phô diễn kỹ năng để kiểm soát mọi thứ, nhưng thực chất bạn chỉ đang diễn cho chính mình xem",r:"có kẻ đang dùng lời ngon ngọt thao túng bạn, hoặc chính bạn đang tự lừa dối bản thân bằng ảo tưởng"},
+        {n:"Nữ Tư Tế",m:"trực giác sớm nhận ra sự bất thường, nhưng sự nhu nhược khiến bạn lờ đi tiếng nói bên trong",r:"những bí mật đen tối mà bạn cố che giấu đang mục nát và chuẩn bị lộ ra ngoài ánh sáng"},
+        {n:"Hoàng Hậu",m:"mải mê hưởng thụ tiện nghi tạm thời mà quên mất rằng gốc rễ của mình đang dần khô héo",r:"sự phụ thuộc cảm xúc vào người khác đang khiến bạn trở nên yếu đuối và mất đi bản sắc cá nhân"},
+        {n:"Hoàng Đế",m:"gồng mình để giữ một vị thế không còn thuộc về mình, sự cứng nhắc này sẽ làm bạn gãy vụn",r:"quyền lực mà bạn đang cố nắm giữ thực chất chỉ là vỏ bọc cho sự thiếu tự tin bên trong"},
+        {n:"Giáo Hoàng",m:"bám víu vào giáo điều cũ kỹ vì sợ hãi thay đổi, điều này đang bóp nghẹt sự sáng tạo của bạn",r:"những lời khuyên bạn tin tưởng bấy lâu thực chất chỉ là rào cản ngăn bạn tìm thấy sự thật"},
+        {n:"Người Tình",m:"trái tim chia làm đôi, sự tham lam muốn có tất cả khiến bạn chẳng có được gì trọn vẹn",r:"một sự đổ vỡ ngầm đang diễn ra, mâu thuẫn nội tâm đang khiến bạn mất ngủ và kiệt sức"},
+        {n:"Cỗ Xe",m:"lao đi như con thiêu thân, tốc độ không bù đắp được cho việc thiếu phương hướng",r:"sự mất kiểm soát về cảm xúc biến bạn thành kẻ hung hăng trong mắt những người xung quanh"},
+        {n:"Sức Mạnh",m:"nén nhịn quá lâu để giữ hòa khí giả tạo khiến con thú bên trong bạn sắp bùng phát",r:"bạn đang để sự sợ hãi và những bản năng thấp kém dẫn dắt hành động của mình"},
+        {n:"Ẩn Sĩ",m:"lẩn trốn thế gian để gặm nhấm nỗi cô đơn, sự chiêm nghiệm đang biến thành sự tự cô lập độc hại",r:"cố tỏ ra thấu hiểu sự đời chỉ là cách bạn che đậy nỗi sợ bị người khác nhìn thấu sự trống rỗng"},
+        {n:"Bánh Xe",m:"vận may đang xoay chuyển, nhưng nếu không có thực lực, sự may mắn này chỉ là tai họa trá hình",r:"những trắc trở liên tục ập đến là cái giá phải trả cho những quyết định sai lầm trong quá khứ"},
+        {n:"Công Lý",m:"quá rạch ròi đến mức tàn nhẫn, sự công bằng bạn đòi hỏi thực chất chỉ là sự ích kỷ",r:"bạn thấy mình là nạn nhân của sự bất công, nhưng hãy nhìn lại những gì chính bạn đã gieo"},
+        {n:"Treo Ngược",m:"mắc kẹt trong góc nhìn hạn hẹp, việc hy sinh bản thân lúc này là vô nghĩa và mù quáng",r:"vùng vẫy trong một vũng bùn mà càng vùng vẫy bạn càng lún sâu hơn"},
+        {n:"Cái Chết",m:"một chương cũ phải kết thúc, việc níu kéo chỉ khiến quá trình trở nên đau đớn và dai dẳng",r:"ôm lấy một cái xác không hồn và hy vọng nó sẽ sống lại"},
+        {n:"Tiết Độ",m:"gượng ép để giữ vẻ ngoài điềm tĩnh khiến nội tâm bạn bị xé nát",r:"lối sống thiếu điều độ và mất cân bằng cảm xúc đang đẩy bạn đến bờ vực suy sụp"},
+        {n:"Ác Quỷ",m:"làm nô lệ cho ham muốn và thói hư tật xấu của chính mình mà vẫn tự lừa dối rằng mình tự do",r:"bắt đầu nhận ra những sợi xích đang siết chặt, nhưng sự hèn nhát khiến bạn không dám bẻ gãy chúng"},
+        {n:"Tòa Tháp",m:"nền tảng dày công xây dựng đang sụp đổ, hệ quả tất yếu của việc xây nhà trên cát",r:"trì hoãn một cú sốc không thể tránh khỏi, sự trốn tránh này chỉ làm hậu quả nặng nề hơn"},
+        {n:"Ngôi Sao",m:"hy vọng viển vông che mờ thực tại khốc liệt mà bạn cần phải đối mặt ngay bây giờ",r:"sự trống rỗng và mất sạch niềm tin khiến bạn trở thành một cái bóng vật vờ không tương lai"},
+        {n:"Mặt Trăng",m:"lạc bước trong mê cung của những kịch bản xấu xa nhất do chính mình vẽ ra",r:"những sự thật trần trụi và xấu xí sắp lộ diện, bạn không còn chỗ nào để lẩn trốn nữa"},
+        {n:"Mặt Trời",m:"tự tin thái quá biến thành kiêu ngạo, bạn đang ngủ quên trên một chiến thắng không có thật",r:"thành công ngắn hạn làm mờ mắt bạn, khiến bạn không thấy vực thẳm đang đợi phía trước"},
+        {n:"Phán Xét",m:"tiếng chuông thức tỉnh vang lên, sai lầm cũ quay lại để đòi một cái giá xứng đáng",r:"trốn tránh trách nhiệm và không dám nhìn thẳng vào sự thật khiến bạn bị kẹt lại quá khứ"},
+        {n:"Thế Giới",m:"đã đi đến giới hạn, sự trọn vẹn mà bạn hằng mong ước thực chất chỉ là một ảo ảnh",r:"mọi thứ vẫn dở dang và thiếu hụt, bạn sẽ không bao giờ hài lòng nếu không thay đổi tư duy"}
     ];
 
     let picked=[], step=0;
-    let locked = localStorage.getItem("namhai_seen") === "1";
 
     function shuffle(a){for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a;}
+    
+    // TRACKING HÀNH VI
+    function trackEvent(eventName, data = {}) {
+        let logs = JSON.parse(localStorage.getItem("namhai_logs") || "[]");
+        logs.push({ event: eventName, time: new Date().toLocaleString(), ...data });
+        if(logs.length > 50) logs.shift();
+        localStorage.setItem("namhai_logs", JSON.stringify(logs));
+    }
+
+    function showLogs() {
+        console.table(JSON.parse(localStorage.getItem("namhai_logs") || "[]"));
+        alert("Lịch sử hành vi đã hiển thị trong Console (F12).");
+    }
+
+    // FAKE AI LEVEL 2: MULTI-HIT & REFLECTION
+    function analyzeTruth(q) {
+        q = q.toLowerCase();
+        let results = [];
+        const reflections = [
+            "Bạn nói mình ổn, nhưng Tiên sinh thấy thực ra bạn đang cố gồng mình chịu đựng đến mức kiệt cùng.",
+            "Đằng sau những lời kể này, Tiên sinh cảm nhận được một khao khát được thấu hiểu mà bạn chưa dám thừa nhận.",
+            "Sự thật là bạn đang tự xây một chiếc lồng cho chính mình và hy vọng tìm thấy chìa khóa ở người khác."
+        ];
+        const map = [
+            { keys: ["chia tay", "người cũ", "ly hôn", "người yêu", "crush", "bỏ", "quay lại"], msgs: ["Một mối quan hệ chưa thực sự khép lại hoàn toàn đang âm thầm chi phối tần số năng lượng của bạn."] },
+            { keys: ["nợ", "tiền", "ngân hàng", "đất", "tài chính", "lỗ", "vay", "trắng tay"], msgs: ["Áp lực từ những con số chưa được giải quyết và gánh nặng vật chất đang khiến tâm trí bạn không thể an yên."] },
+            { keys: ["sếp", "công ty", "nghỉ việc", "đồng nghiệp", "áp lực", "công việc"], msgs: ["Môi trường xung quanh đang khiến bạn bị bóp nghẹt, khiến tài năng thực sự không thể phát tiết."] }
+        ];
+
+        for (let item of map) {
+            if (item.keys.some(k => q.includes(k))) results.push(item.msgs[0]);
+        }
+        if (results.length > 0) results.unshift(reflections[Math.floor(Math.random() * reflections.length)]);
+        return results.length ? results.join(" ") : "Tiên sinh thấy tâm tư bạn đang rối bời bởi những luồng suy nghĩ chồng chéo chưa tìm được lối ra.";
+    }
+
+    // MASTER WEIGHTED CARDS 70/30
+    function getMasterCards(topic) {
+        let pool = [...Array(22).keys()];
+        let forced = null;
+        if (Math.random() < 0.7) {
+            if (topic === "money") forced = 15; // Ác Quỷ
+            else if (topic === "love") forced = 6; // Người Tình
+            else if (topic === "work") forced = 4; // Hoàng Đế
+            else forced = 18; // Mặt Trăng
+        }
+        if (forced !== null) {
+            let rest = shuffle(pool.filter(i => i !== forced)).slice(0, 4);
+            return [rest[0], rest[1], forced, rest[2], rest[3]];
+        } else {
+            return shuffle(pool).slice(0, 5);
+        }
+    }
+
     function lifeNumber(d,m,y){
-        if(!d||!m||!y) return null;
-        let s=(d+""+m+""+y).split("").reduce((a,b)=>a+parseInt(b),0);
+        if(!d || !m || !y) return null;
+        let s=(parseInt(d)+""+parseInt(m)+""+parseInt(y)).split("").reduce((a,b)=>a+parseInt(b),0);
         while(s>9){s=s.toString().split("").reduce((x,y)=>x+parseInt(y),0)}
         return s;
     }
 
     function startDraw(){
-        let n=document.getElementById("name").value.trim();
-        let q=document.getElementById("question").value.trim();
-        if(!n || q.length < 15){alert("Tiên sinh cần bạn thành tâm kể rõ câu chuyện hơn (ít nhất 15 ký tự)!"); return;}
-        if(locked){ alert("Quẻ hôm nay đã định. Hãy mở khóa hoặc quay lại vào ngày mai."); return; }
-        
-        document.getElementById("bgm").play().catch(()=>{});
+        if(localStorage.getItem("namhai_limit") === "1"){
+            alert("Tiên sinh đã phán cho bạn rồi. Hãy quay lại vào ngày mai!");
+            return;
+        }
+        const n=document.getElementById("name").value.trim();
+        const q=document.getElementById("question").value.trim();
+        const t=document.getElementById("topic").value;
+        if(!n || q.length < 15){ alert("Hãy thành tâm giãi bày để Tiên sinh thấu thị chân tướng!"); return; }
+
+        trackEvent("start_draw", { name: n, topic: t });
         step=0;
-        picked=shuffle([...Array(22).keys()]).slice(0,5).map(i=>({id:i,rev:Math.random()<0.5}));
+        let smartIds = getMasterCards(t);
+        picked = smartIds.map(i => ({id: i, rev: Math.random() < 0.5}));
+        
         document.getElementById("results").innerHTML="";
         document.getElementById("final").innerHTML="";
+        document.getElementById("paywall").classList.add("hidden");
+        document.getElementById("bgm").play().catch(()=>{});
         showNext();
     }
 
     function showNext(){
         if(step<5){
-            let r=["Quá khứ","Hiện tại","Nút thắt","Hành động","Hậu quả"];
+            let r=["Gốc rễ","Hiện tại","Nút thắt","Hành động","Kết quả"];
             let p=picked[step];
             let url=`https://www.sacred-texts.com/tarot/pkt/img/ar${p.id<10?'0'+p.id:p.id}.jpg`;
-            document.getElementById("results").innerHTML+=`<div class="result-card"><b>${r[step]}</b><br><img class="card-img ${p.rev?'rev':''}" src="${url}"><br>${cards[p.id].n}<br>${step<4?`<button onclick="showNext()">Lật lá tiếp theo</button>`:`<button onclick="finish()">Tiên sinh kết quẻ</button>`}</div>`;
-            step++; window.scrollTo({top:document.body.scrollHeight, behavior:'smooth'});
+            document.getElementById("results").innerHTML+=`<div class="result-card"><b>${r[step]}</b><br><img class="card-img ${p.rev?'rev':''}" src="${url}"><br>Cổ tự: ${cards[p.id].n}<br>${step<4?`<button onclick="showNext()">Tiếp tục thấu thị</button>`:`<button onclick="finish()">Kết quẻ</button>`}</div>`;
+            step++; window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'});
         }
     }
 
     function finish(){
         const name=document.getElementById("name").value;
-        const q=document.getElementById("question").value.toLowerCase();
-        const num=lifeNumber(parseInt(document.getElementById("day").value), parseInt(document.getElementById("month").value), parseInt(document.getElementById("year").value));
+        const q=document.getElementById("question").value;
+        const topic=document.getElementById("topic").value;
+        const state=document.getElementById("state").value;
+        const num=lifeNumber(document.getElementById("day").value, document.getElementById("month").value, document.getElementById("year").value);
         const mgs = picked.map(p => p.rev ? cards[p.id].r : cards[p.id].m);
 
-        // BỘ NÃO PHÂN TÍCH CHI TIẾT (ANALYSER)
-        let deepInsight = "";
-        if(q.includes("quay lại") || q.includes("người yêu cũ")) deepInsight = "Bạn hỏi về sự tái hợp, nhưng thực tế bạn đang tiếc công sức mình đã bỏ ra nhiều hơn là tiếc con người đó.";
-        else if(q.includes("tiền") || q.includes("nợ") || q.includes("đất")) deepInsight = "Trong chuyện tiền bạc này, cái u mê lớn nhất của bạn là tin vào những lời hứa hẹn không có cơ sở pháp lý.";
-        else if(q.includes("nghỉ") || q.includes("việc") || q.includes("sếp")) deepInsight = "Bạn định rời đi vì tự ái cá nhân hay vì sự nghiệp thực sự? Đừng để cái tôi dẫn dắt lúc này.";
-        else deepInsight = "Câu chuyện của bạn cho thấy một sự mâu thuẫn lớn giữa điều bạn muốn và điều bạn đang làm hàng ngày.";
+        trackEvent("finish_72_view", { name: name });
 
-        let s = `👉 ${name}, hãy ngồi xuống và nghe Tiên sinh đọc vị câu chuyện của bạn.\n\n`;
-        s += `⚠️ **Trọng điểm u mê:** ${deepInsight}\n\n`;
-        s += `📍 **Dòng chảy năng lượng:** Bạn xuất phát từ việc ${mgs[0]}, dẫn đến hiện trạng ${mgs[1]}. Cái 'nút thắt' khiến bạn mất ngủ chính là việc bạn ${mgs[2]}.\n\n`;
-        s += `💡 **Lời khuyên xương máu:** Bạn đang cố ${mgs[3]}, nhưng nếu không tỉnh táo, hậu quả cuối cùng sẽ là ${mgs[4]}.\n\n`;
+        let aiTruth = analyzeTruth(q);
+        let contextMsg = "";
+        if(topic === "love") contextMsg = state === "hesitate" ? "Dòng năng lượng hỗn loạn cho thấy bạn đang níu kéo một bóng ma quá khứ." : "Tâm trí đang mâu thuẫn, bạn tìm sự bao biện cho sự ích kỷ.";
+        else if(topic === "money") contextMsg = "Trong cõi vật chất, tham vọng đang che mờ thiên nhãn, rủi ro đã cận kề.";
+        else contextMsg = "Nội tâm bạn như mặt hồ đầy sóng gió bởi những bóng đen chưa được hóa giải.";
+
+        // BUILD STRING FIX NGỮ PHÁP MƯỢT MÀ
+        let s = `👉 ${name}, Tiên sinh đã thấu thị chân tướng sự việc qua lời kể của bạn:\n\n`;
+        s += `🧠 **Tiên sinh nhìn ra:** ${aiTruth}\n\n`;
+        s += `⚠️ **Huyền cơ:** ${contextMsg}\n\n`;
+        s += `📍 **Dòng chảy định mệnh:**\n`;
+        s += `- Gốc rễ nằm ở chỗ bạn ${mgs[0]}.\n`;
+        s += `- Hiện tại, bạn đang rơi vào trạng thái ${mgs[1]}.\n\n`;
+        s += `📍 **Nút thắt sinh tử:** Chính việc bạn ${mgs[2]} là thứ đang xích chân bạn lại.\n\n`;
+        s += `💡 **Cảnh báo:** Nếu bạn tiếp tục đi theo hướng ${mgs[3]}, kết cục sẽ là ${mgs[4]}.\n\n`;
         
-        if(num) s += `✨ **Thần số học (Số ${num}):** Với bản tính của người mang số ${num}, bạn thường ${num==7?'quá đa nghi':num==8?'quá tham vọng':num==4?'quá cứng nhắc':'dễ bị cảm xúc chi phối'}. Hãy dùng lý trí để bóc tách 3000 chữ bạn vừa kể.\n\n`;
-        s += `👉 **Lời chốt hạ:** Bạn kể rất nhiều, nhưng sự thật duy nhất bạn đang trốn tránh là...`;
+        if(num) {
+            let numMsg = num==7?"Trực giác mạnh nhưng sự đa nghi thái quá đang biến bạn thành kẻ cô độc.":num==8?"Tham vọng vật chất là động lực nhưng cũng là liều thuốc độc.":"Cảm xúc thất thường là rào cản lớn nhất của bạn.";
+            s += `✨ **Bảo tự số ${num}:** ${numMsg}\n\n`;
+        }
+        s += `👉 **SỰ THẬT CUỐI CÙNG:** Đằng sau tất cả, có một điểm đen mà bạn không bao giờ muốn nhắc tới, đó chính là...`;
 
         let i=0; let el=document.getElementById("final"); el.innerHTML="";
         let timer=setInterval(()=>{
             el.innerHTML += (s[i]==="\n"?"<br>":s[i]); i++;
-            if(i>=s.length*0.7) { 
+            if(i>=s.length*0.72) { 
                 clearInterval(timer);
                 document.getElementById("paywall").classList.remove("hidden");
-                document.getElementById("paywall").innerHTML=`<div class="result-card lock"><p>🔒 Tiên sinh đã thấy 'điểm mù' trong 3000 chữ của bạn. Nhập mã NAMHAI để nhận nốt 30% sự thật còn lại.</p><input id="code" style="width:120px" placeholder="Mã..."><button onclick="unlock('${encodeURIComponent(s)}')">Mở khóa</button></div>`;
+                document.getElementById("paywall").innerHTML=`<div class="result-card lock"><p>🔒 Tiên sinh đã thấy 'điểm mù' trong lời kể của bạn. Nhập mã NAMHAI để khai mở nốt 30% sự thật.</p><input id="code" style="width:120px" placeholder="Mã..."><button onclick="unlock('${encodeURIComponent(s)}')">Mở khóa</button></div>`;
             }
-        },30);
-        localStorage.setItem("namhai_seen","1");
+        },35);
+        localStorage.setItem("namhai_limit", "1");
     }
 
-    function unlock(full){
-        if(document.getElementById("code").value==="NAMHAI"){
-            document.getElementById("final").innerHTML = decodeURIComponent(full).replace(/\n/g,"<br>");
+    function unlock(fullText){
+        if(document.getElementById("code").value.toUpperCase()==="NAMHAI"){
+            trackEvent("successful_unlock");
+            document.getElementById("final").innerHTML = decodeURIComponent(fullText).replace(/\n/g,"<br>");
             document.getElementById("paywall").classList.add("hidden");
             document.getElementById("copyBtn").classList.remove("hidden");
-        } else alert("Mã không đúng, chất xám của Tiên sinh không dành cho người thiếu thành ý!");
+            localStorage.removeItem("namhai_limit"); 
+        } else { alert("Sai mã. Thiên cơ không dành cho người thiếu thành tâm."); }
     }
 
     function toggleMusic(){ let m=document.getElementById("bgm"); m.paused?m.play():m.pause(); }
-    function copyText(){ navigator.clipboard.writeText(document.getElementById("final").innerText); alert("Đã sao chép!"); }
+    function copyText(){ navigator.clipboard.writeText(document.getElementById("final").innerText); alert("Đã sao chép lời phán!"); }
     function resetApp(){ localStorage.clear(); location.reload(); }
 </script>
 </body>
 </html>
-
-        
